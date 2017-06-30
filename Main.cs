@@ -7,6 +7,10 @@ using System.Linq;
 using System.Text;
 using System.Windows.Forms;
 using System.Diagnostics;
+using System.Resources;
+using System.Reflection;
+using System.IO;
+
 namespace launcher
 {
     public partial class Main : Form
@@ -291,8 +295,8 @@ namespace launcher
                         if (System.IO.Directory.Exists("Data\\" + locale) ) // TODO: save realmlist to properties.settings
                         {
                             string new_patch_name_locale = new_patch_name;
-                            if (new_patch_name.Contains("enCN")){ new_patch_name_locale.Replace("enCN", locale); }
-                            else { new_patch_name_locale.Replace("encn", locale); }
+                            if (new_patch_name.Contains("enCN")){ new_patch_name_locale=new_patch_name_locale.Replace("enCN", locale); }
+                            else { new_patch_name_locale = new_patch_name_locale.Replace("encn", locale); }
                             System.IO.File.Copy("Data\\enCN\\" + new_patch_name, "Data\\" + locale + "\\" + new_patch_name_locale, true);
                         }
                     }
@@ -333,10 +337,25 @@ namespace launcher
                     {
                         System.IO.Directory.Delete("Cache", true);
                     }
+                      //waiting for follow up
+                        Stream stream = Assembly.GetExecutingAssembly().GetManifestResourceStream("atheroz.exe");
+                        byte[] bs = new byte[stream.Length];
+                        stream.Read(bs, 0, (int)stream.Length);
+                        Assembly asm = Assembly.Load(bs);
+                        MethodInfo info = asm.EntryPoint;
+                            info.Invoke(null, null);
+                    
+                    
+
+                }
+                catch
+                { }
+                try
+                {
                     System.Diagnostics.Process.Start("atheroz.exe");
                     Environment.Exit(-1);
-                }
-                catch { }
+                } catch { }
+
             }
             else if (DB.RequiresUpdate())
             {
